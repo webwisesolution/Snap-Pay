@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Snap Pay - Complete Mobile Money App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(145deg, #1B4D1F 0%, #0A2E0E 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Mobile Container */
+        .phone-mock {
+            max-width: 400px;
+            width: 100%;
+            height: 780px;
+            background: #FFFFFF;
+            border-radius: 44px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Dynamic Island */
+        .dynamic-island {
+            background: #0B2A0F;
+            height: 44px;
+            border-radius: 30px;
+            margin: 12px 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 10;
+        }
+
+        /* Main Content Area */
+        .app-container {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .app-container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .app-container::-webkit-scrollbar-track {
+            background: #E8F5E9;
+        }
+
+        .app-container::-webkit-scrollbar-thumb {
+            background: #2E7D32;
+            border-radius: 10px;
+        }
+
+        /* Pages */
+        .page {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Header Styles */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1B5E20, #4CAF50);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .back-btn {
+            background: #F3F4F6;
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #E5E7EB;
+        }
+
+        /* Balance Card */
+        .balance-card {
+            background: linear-gradient(135deg, #1E4A1F 0%, #0F3A12 100%);
+            border-radius: 32px;
+            padding: 24px;
+            color: white;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .balance-label {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+
+        .balance-amount {
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+        }
+
+        /* Quick Actions Grid */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .action-btn {
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-4px);
+        }
+
+        .action-icon {
+            background: #E8F5E9;
+            width: 56px;
+            height: 56px;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            color: #2E7D32;
+            font-size: 24px;
+            transition: all 0.2s;
+        }
+
+        /* Section Styles */
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-title h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1F2937;
+        }
+
+        .section-link {
+            font-size: 13px;
+            color: #2E7D32;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Favorites List */
+        .favorites-list {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 28px;
+        }
+
+        .favorite-item {
+            text-align: center;
+            min-width: 70px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .fav-avatar {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            border-radius: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            color: white;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        /* Transactions List */
+        .transactions-list {
+            margin-bottom: 28px;
+        }
+
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #F3F4F6;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .transaction-item:hover {
+            background: #F9FAFB;
+            padding-left: 8px;
+            border-radius: 12px;
+        }
+
+        .transaction-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .transaction-icon {
+            width: 48px;
+            height: 48px;
+            background: #E8F5E9;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2E7D32;
+            font-size: 20px;
+        }
+
+        /* Service Cards */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .service-card {
+            background: #F9FAFB;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #E5E7EB;
+        }
+
+        .service-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-color: #2E7D32;
+        }
+
+        .service-icon {
+            font-size: 32px;
+            color: #2E7D32;
+            margin-bottom: 12px;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            background: white;
+            border-top: 1px solid #E5E7EB;
+            padding: 12px 20px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #9CA3AF;
+        }
+
+        .nav-item.active {
+            color: #2E7D32;
+        }
+
+        .nav-item i {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .nav-item span {
+            font-size: 11px;
+            font-weight: 500;
+            display: block;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 32px 32px 0 0;
+            padding: 24px;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 14px;
+            border: 1.5px solid #E5E7EB;
+            border-radius: 16px;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #2E7D32, #1B5E20);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 28px;
+            font-size: 16px;
+            font-weight: 700;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .success-toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2E7D32;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            z-index: 2000;
+            display: none;
+            animation: fadeInUp 0.3s ease;
+            white-space: nowrap;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        /* Profile Page Styles */
+        .profile-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: white;
+            font-size: 40px;
+            font-weight: 700;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #F9FAFB;
+            padding: 16px;
+            text-align: center;
+            border-radius: 16px;
+        }
+
+        /* History Filters */
+        .filter-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .filter-tab {
+            padding: 8px 16px;
+            background: #F3F4F6;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .filter-tab.active {
+            background: #2E7D32;
+            color: white;
+        }
+
+        /* Loan Cards */
+        .loan-card {
+            background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-mock">
+        <div class="dynamic-island">
+            <span class="time">9:41</span>
+            <div class="battery">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-full"></i>
+            </div>
+        </div>
+
+        <div class="app-container">
+            <!-- Home Page -->
+            <div id="homePage" class="page active">
+                <div class="page-header">
+                    <div class="logo">
+                        <h1>Snap Pay</h1>
+                        <p style="font-size: 12px; color: #6B7280;">💚 Green Mode</p>
+                    </div>
+                    <div class="back-btn" id="homeNotifications">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                </div>
+
+                <div class="balance-card">
+                    <div class="balance-label">Available Balance</div>
+                    <div class="balance-amount" id="homeBalance">KES 12,450.00</div>
+                    <div class="balance-trend" style="font-size: 12px; opacity: 0.8;">
+                        <span style="color: #A5D6A7;"><i class="fas fa-arrow-up"></i> +5%</span>
+                        <span>from last month</span>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <div class="action-btn" data-action="send">
+                        <div class="action-icon"><i class="fas fa-paper-plane"></i></div>
+                        <div class="action-label">Send</div>
+                    </div>
+                    <div class="action-btn" data-action="pay">
+                        <div class="action-icon"><i class="fas fa-qrcode"></i></div>
+                        <div class="action-label">Pay</div>
+                    </div>
+                    <div class="action-btn" data-action="airtime">
+                        <div class="action-icon"><i class="fas fa-phone-alt"></i></div>
+                        <div class="action-label">Airtime</div>
+                    </div>
+                    <div class="action-btn" data-action="more">
+                        <div class="action-icon"><i class="fas fa-ellipsis-h"></i></div>
+                        <div class="action-label">More</div>
+                    </div>
+                </div>
+
+                <div class="section-title">
+                    <h3>⭐ Favorites</h3>
+                    <div class="section-link" onclick="navigateTo('contactsPage')">Manage</div>
+                </div>
+                <div class="favorites-list">
+                    <div class="favorite-item" data-contact="Mama Mia" data-number="0712345678">
+                        <div class="fav-avatar">MM</div>
+                        <div class="fav-name">Mama Mia</div>
+                        <div class="fav-action" style="font-size: 10px; color: #6B7280;">Send</div>
+                    </div>
+                    <div class="favorite-item" data-contact="John Doe" data-number="0723456789">
+                        <div class="fav-avatar">JD</div>
+                        <div class="fav-name">John Doe</div>
+                        <div class="fav-action" style="font-size: 10px; color: #6B7280;">Send</div>
+                    </div>
+                    <div class="favorite-item" data-contact="Sarah W." data-number="0734567890">
+                        <div class="fav-avatar">SW</div>
+                        <div class="fav-name">Sarah W.</div>
+                        <div class="fav-action" style="font-size: 10px; color: #6B7280;">Send</div>
+                    </div>
+                    <div class="favorite-item" data-contact="Mike K." data-number="0745678901">
+                        <div class="fav-avatar">MK</div>
+                        <div class="fav-name">Mike K.</div>
+                        <div class="fav-action" style="font-size: 10px; color: #6B7280;">Send</div>
+                    </div>
+                </div>
+
+                <div class="section-title">
+                    <h3>📋 Recent Transactions</h3>
+                    <div class="section-link" onclick="navigateTo('historyPage')">See All</div>
+                </div>
+                <div class="transactions-list" id="homeTransactions">
+                    <!-- Transactions will be populated here -->
+                </div>
+            </div>
+
+            <!-- History Page -->
+            <div id="historyPage" class="page">
+                <div class="page-header">
+                    <div class="back-btn" onclick="navigateTo('homePage')">
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                    <h1>Transaction History</h1>
+                    <div style="width: 40px;"></div>
+                </div>
+
+                <div class="filter-tabs" id="filterTabs">
+                    <div class="filter-tab active" data-filter="all">All</div>
+                    <div class="filter-tab" data-filter="sent">Sent</div>
+                    <div class="filter-tab" data-filter="received">Received</div>
+                    <div class="filter-tab" data-filter="bills">Bills</div>
+                    <div class="filter-tab" data-filter="airtime">Airtime</div>
+                </div>
+
+                <div class="transactions-list" id="historyTransactions"></div>
+            </div>
+
+            <!-- Services Page -->
+            <div id="servicesPage" class="page">
+                <div class="page-header">
+                    <div class="back-btn" onclick="navigateTo('homePage')">
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                    <h1>Services</h1>
+                    <div style="width: 40px;"></div>
+                </div>
+
+                <div class="services-grid">
+                    <div class="service-card" onclick="openLoanModal()">
+                        <div class="service-icon"><i class="fas fa-hand-holding-usd"></i></div>
+                        <h4>Loans</h4>
+                        <p style="font-size: 12px; color: #6B7280;">Up to KES 50,000</p>
+                    </div>
+                    <div class="service-card" onclick="showToast('Savings Pots coming soon!')">
+                        <div class="service-icon"><i class="fas fa-piggy-bank"></i></div>
+                        <h4>Savings</h4>
+                        <p style="font-size: 12px; color: #6B7280;">Earn interest</p>
+                    </div>
+                    <div class="service-card" onclick="showToast('Insurance products available')">
+                        <div class="service-icon"><i class="fas fa-shield-alt"></i></div>
+                        <h4>Insurance</h4>
+                        <p style="font-size: 12px; color: #6B7280;">Health & Accident</p>
+                    </div>
+                    <div class="service-card" onclick="showToast('International transfers coming soon')">
+                        <div class="service-icon"><i class="fas fa-globe"></i></div>
+                        <h4>International</h4>
+                        <p style="font-size: 12px; color: #6B7280;">Send abroad</p>
+                    </div>
+                    <div class="service-card" onclick="showToast('Investment options available')">
+                        <div class="service-icon"><i class="fas fa-chart-line"></i></div>
+                        <h4>Investments</h4>
+                        <p style="font-size: 12px; color: #6B7280;">MMF & Stocks</p>
+                    </div>
+                    <div class="service-card" onclick="showToast('Vouchers & cashback')">
+                        <div class="service-icon"><i class="fas fa-ticket-alt"></i></div>
+                        <h4>Vouchers</h4>
+                        <p style="font-size: 12px; color: #6B7280;">Cashback offers</p>
+                    </div>
+                </div>
+
+                <div class="section-title">
+                    <h3>💡 Quick Billers</h3>
+                </div>
+                <div class="transactions-list">
+                    <div class="transaction-item" onclick="quickPayBill('KPLC', 'Power')">
+                        <div class="transaction-left">
+                            <div class="transaction-icon"><i class="fas fa-bolt"></i></div>
+                            <div>
+                                <h4>Kenya Power</h4>
+                                <div style="font-size: 12px; color: #6B7280;">Electricity bill</div>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="transaction-item" onclick="quickPayBill('Nairobi Water', 'Water')">
+                        <div class="transaction-left">
+                            <div class="transaction-icon"><i class="fas fa-tint"></i></div>
+                            <div>
+                                <h4>Water Company</h4>
+                                <div style="font-size: 12px; color: #6B7280;">Water bill</div>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="transaction-item" onclick="quickPayBill('Zuku', 'Internet')">
+                        <div class="transaction-left">
+                            <div class="transaction-icon"><i class="fas fa-wifi"></i></div>
+                            <div>
+                                <h4>Internet & TV</h4>
+                                <div style="font-size: 12px; color: #6B7280;">Zuku, Safaricom</div>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Page -->
+            <div id="profilePage" class="page">
+                <div class="page-header">
+                    <div class="back-btn" onclick="navigateTo('homePage')">
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                    <h1>My Profile</h1>
+                    <div style="width: 40px;"></div>
+                </div>
+
+                <div class="profile-header">
+                    <div class="profile-avatar">JD</div>
+                    <h3>John Mwangi</h3>
+                    <p style="color: #6B7280;">+254 712 345 678</p>
+                    <p style="color: #2E7D32; font-size: 12px;">⭐ Tier 3 - Premium Member</p>
+                </div>
+
+                <div class="profile-stats">
+                    <div class="stat-card">
+                        <i class="fas fa-calendar-alt" style="color: #2E7D32;"></i>
+                        <h4>Member Since</h4>
+                        <p>2024</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-exchange-alt" style="color: #2E7D32;"></i>
+                        <h4>Transactions</h4>
+                        <p>247</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-star" style="color: #FFC107;"></i>
+                        <h4>Loyalty Points</h4>
+                        <p>1,250</p>
+                    </div>
+                </div>
+
+                <div class="section-title">
+                    <h3>Account Settings</h3>
+                </div>
+                <div class="transactions-list">
+                    <div class="transaction-item" onclick="showToast('KYC verification portal opening')">
+                        <div class="transaction-left">
+                            <div class="transaction-icon"><i class="fas fa-id-card"></i></div>
+                            <div>
+                                <h4>KYC Verification</h4>
+                                <div style="font-size: 12px; color: #10B981;">✓ Verified</div>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="transaction-item" onclick="showToast('Security settings')">
+                        <div class="transaction-left">
+                            <div class="transaction-icon"><i class="fas fa-lock"></i></div>
+                            <div>
+                                <h4>Security</h4>
+                                <div style="font-size: 12px; color: #6B7280;">PIN, Biometric, 2FA</div>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="transaction-item" onclick="showToast('Linked accounts')">
+                        <div class="transaction-left">
+                            <div class="transaction-icon"><i class="fas fa-university"></i></div>
+                            <div>
+                                <h4>Linked Banks</h4>
+                                <div style="font-size: 12px; color: #6B7280;">2 accounts linked</div>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="transaction-item" onclick="showToast('Notification preferences')">
+                        <div class="transaction-left">
+                            <div class="transaction-icon"><i class="fas fa-bell"></i></div>
+                            <div>
+                                <h4>Notifications</h4>
+                                <div style="font-size: 12px; color: #6B7280;">Push, SMS, Email</div>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contacts Page -->
+            <div id="contactsPage" class="page">
+                <div class="page-header">
+                    <div class="back-btn" onclick="navigateTo('homePage')">
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                    <h1>Contacts</h1>
+                    <div class="back-btn" onclick="showToast('Add new contact')">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                </div>
+
+                <div class="input-group" style="margin-bottom: 20px;">
+                    <input type="text" placeholder="Search contacts..." id="searchContacts" style="width: 100%; padding: 12px; border-radius: 24px;">
+                </div>
+
+                <div class="section-title">
+                    <h3>⭐ Favorites</h3>
+                </div>
+                <div id="favoritesList"></div>
+
+                <div class="section-title">
+                    <h3>All Contacts</h3>
+                </div>
+                <div id="allContactsList"></div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item" data-nav="home">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </div>
+            <div class="nav-item" data-nav="history">
+                <i class="fas fa-history"></i>
+                <span>History</span>
+            </div>
+            <div class="nav-item" data-nav="services">
+                <i class="fas fa-th-large"></i>
+                <span>Services</span>
+            </div>
+            <div class="nav-item" data-nav="profile">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="sendModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <h3>Send Money</h3>
+                <div class="close-modal" style="cursor: pointer;"><i class="fas fa-times"></i></div>
+            </div>
+            <div class="input-group">
+                <label>Recipient</label>
+                <input type="text" id="recipientPhone" placeholder="Phone number or name">
+            </div>
+            <div class="input-group">
+                <label>Amount (KES)</label>
+                <input type="number" id="sendAmount" placeholder="0.00">
+            </div>
+            <div class="input-group">
+                <label>Reference (Optional)</label>
+                <input type="text" id="reference" placeholder="E.g., School fees, Rent">
+            </div>
+            <button class="submit-btn" id="confirmSend">Send Money</button>
+        </div>
+    </div>
+
+    <div id="payModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <h3>Pay Bill</h3>
+                <div class="close-modal" style="cursor: pointer;"><i class="fas fa-times"></i></div>
+            </div>
+            <div class="input-group">
+                <label>Business Number</label>
+                <input type="text" id="businessNumber" placeholder="Enter business number">
+            </div>
+            <div class="input-group">
+                <label>Account Number</label>
+                <input type="text" id="accountNumber" placeholder="Account number">
+            </div>
+            <div class="input-group">
+                <label>Amount (KES)</label>
+                <input type="number" id="payAmount" placeholder="0.00">
+            </div>
+            <button class="submit-btn" id="confirmPay">Pay Bill</button>
+        </div>
+    </div>
+
+    <div id="airtimeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <h3>Buy Airtime</h3>
+                <div class="close-modal" style="cursor: pointer;"><i class="fas fa-times"></i></div>
+            </div>
+            <div class="input-group">
+                <label>Phone Number</label>
+                <input type="text" id="airtimePhone" placeholder="0712345678">
+            </div>
+            <div class="input-group">
+                <label>Amount (KES)</label>
+                <select id="airtimeAmount">
+                    <option value="20">KES 20</option>
+                    <option value="50">KES 50</option>
+                    <option value="100">KES 100</option>
+                    <option value="200">KES 200</option>
+                    <option value="500">KES 500</option>
+                </select>
+            </div>
+            <button class="submit-btn" id="confirmAirtime">Buy Airtime</button>
+        </div>
+    </div>
+
+    <div id="loanModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <h3>Snap Credit</h3>
+                <div class="close-modal" style="cursor: pointer;"><i class="fas fa-times"></i></div>
+            </div>
+            <div class="loan-card" style="background: linear-gradient(135deg, #E8F5E9, #C8E6C9); margin-bottom: 20px;">
+                <h4>Your Loan Limit</h4>
+                <p style="font-size: 32px; font-weight: 800; color: #2E7D32;">KES 50,000</p>
+                <p>Based on your transaction history</p>
+            </div>
+            <div class="input-group">
+                <label>Loan Amount (KES)</label>
+                <input type="number" id="loanAmount" placeholder="Min KES 500">
+            </div>
+            <div class="input-group">
+                <label>Repayment Period</label>
+                <select id="loanPeriod">
+                    <option value="30">30 days (5% interest)</option>
+                    <option value="60">60 days (8% interest)</option>
+                    <option value="90">90 days (12% interest)</option>
+                </select>
+            </div>
+            <button class="submit-btn" id="confirmLoan">Apply for Loan</button>
+        </div>
+    </div>
+
+    <div id="toast" class="success-toast"></div>
+
+    <script>
+        // App State
+        let currentBalance = 12450.00;
+        let transactions = [
+            { id: 1, type: 'sent', recipient: 'M-Pesa Pay', amount: 500, date: '2026-03-28T10:32:00', description: 'Payment', status: 'Completed' },
+            { id: 2, type: 'bills', recipient: 'Electricity Bill', amount: 2000, date: '2026-03-27T16:15:00', description: 'KPLC', status: 'Paid' },
+            { id: 3, type: 'sent', recipient: 'John Doe', amount: 1500, date: '2026-03-27T09:45:00', description: 'Lunch money', status: 'Sent' },
+            { id: 4, type: 'airtime', recipient: 'Self', amount: 100, date: '2026-03-15T14:20:00', description: 'Airtime', status: 'Completed' },
+            { id: 5, type: 'received', recipient: 'Sarah W.', amount: 2500, date: '2026-03-10T11:00:00', description: 'Payment received', status: 'Completed' }
+        ];
+
+        let contacts = [
+            { name: 'Mama Mia', phone: '0712345678', avatar: 'MM', favorite: true },
+            { name: 'John Doe', phone: '0723456789', avatar: 'JD', favorite: true },
+            { name: 'Sarah W.', phone: '0734567890', avatar: 'SW', favorite: true },
+            { name: 'Mike K.', phone: '0745678901', avatar: 'MK', favorite: true },
+            { name: 'Peter O.', phone: '0756789012', avatar: 'PO', favorite: false },
+            { name: 'Grace M.', phone: '0767890123', avatar: 'GM', favorite: false }
+        ];
+
+        // Navigation
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+            
+            // Update active nav
+            const navMap = {
+                'homePage': 'home',
+                'historyPage': 'history',
+                'servicesPage': 'services',
+                'profilePage': 'profile'
+            };
+            
+            if (navMap[pageId]) {
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                    if (nav.dataset.nav === navMap[pageId]) {
+                        nav.classList.add('active');
+                    }
+                });
+            }
+            
+            // Refresh data when navigating
+            if (pageId === 'historyPage') renderHistory();
+            if (pageId === 'contactsPage') renderContacts();
+            updateBalanceDisplay();
+        }
+
+        function updateBalanceDisplay() {
+            const balanceElements = document.querySelectorAll('#homeBalance, #profileBalance');
+            balanceElements.forEach(el => {
+                if (el) el.innerText = `KES ${currentBalance.toLocaleString('en-KE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            });
+        }
+
+        function updateBalance(amount, isDeduction = true) {
+            if (isDeduction) {
+                if (currentBalance >= amount) {
+                    currentBalance -= amount;
+                    updateBalanceDisplay();
+                    return true;
+                } else {
+                    showToast('Insufficient balance!', 'error');
+                    return false;
+                }
+            } else {
+                currentBalance += amount;
+                updateBalanceDisplay();
+                return true;
+            }
+        }
+
+        function addTransaction(recipient, amount, type, description = '') {
+            const newTransaction = {
+                id: Date.now(),
+                type: type,
+                recipient: recipient,
+                amount: amount,
+                date: new Date().toISOString(),
+                description: description,
+                status: 'Completed'
+            };
+            transactions.unshift(newTransaction);
+            renderHomeTransactions();
+            if (document.getElementById('historyPage').classList.contains('active')) {
+                renderHistory();
+            }
+        }
+
+        function renderHomeTransactions() {
+            const container = document.getElementById('homeTransactions');
+            if (!container) return;
+            
+            container.innerHTML = transactions.slice(0, 3).map(t => `
+                <div class="transaction-item" onclick="viewTransactionDetail(${t.id})">
+                    <div class="transaction-left">
+                        <div class="transaction-icon"><i class="fas ${t.type === 'sent' ? 'fa-paper-plane' : t.type === 'received' ? 'fa-download' : t.type === 'bills' ? 'fa-file-invoice' : 'fa-phone-alt'}"></i></div>
+                        <div class="transaction-info">
+                            <h4>${t.recipient}</h4>
+                            <div class="transaction-date">${new Date(t.date).toLocaleDateString()}, ${new Date(t.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                        </div>
+                    </div>
+                    <div class="transaction-amount">
+                        <div class="amount-main ${t.type !== 'received' ? 'amount-negative' : ''}" style="color: ${t.type === 'received' ? '#10B981' : '#1F2937'}">${t.type === 'received' ? '+' : '-'} KES ${t.amount.toLocaleString()}</div>
+                        <div class="amount-desc">${t.status}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderHistory(filter = 'all') {
+            const container = document.getElementById('historyTransactions');
+            if (!container) return;
+            
+            let filtered = transactions;
+            if (filter !== 'all') {
+                filtered = transactions.filter(t => t.type === filter);
+            }
+            
+            container.innerHTML = filtered.map(t => `
+                <div class="transaction-item" onclick="viewTransactionDetail(${t.id})">
+                    <div class="transaction-left">
+                        <div class="transaction-icon"><i class="fas ${t.type === 'sent' ? 'fa-paper-plane' : t.type === 'received' ? 'fa-download' : t.type === 'bills' ? 'fa-file-invoice' : 'fa-phone-alt'}"></i></div>
+                        <div class="transaction-info">
+                            <h4>${t.recipient}</h4>
+                            <div class="transaction-date">${new Date(t.date).toLocaleDateString()}, ${new Date(t.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                            ${t.description ? `<div style="font-size: 11px; color: #6B7280;">${t.description}</div>` : ''}
+                        </div>
+                    </div>
+                    <div class="transaction-amount">
+                        <div class="amount-main ${t.type !== 'received' ? 'amount-negative' : ''}" style="color: ${t.type === 'received' ? '#10B981' : '#1F2937'}">${t.type === 'received' ? '+' : '-'} KES ${t.amount.toLocaleString()}</div>
+                        <div class="amount-desc">${t.status}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderContacts() {
+            const favoritesContainer = document.getElementById('favoritesList');
+            const allContainer = document.getElementById('allContactsList');
+            
+            const favorites = contacts.filter(c => c.favorite);
+            const others = contacts.filter(c => !c.favorite);
+            
+            if (favoritesContainer) {
+                favoritesContainer.innerHTML = `
+                    <div class="favorites-list">
+                        ${favorites.map(c => `
+                            <div class="favorite-item" onclick="quickSend('${c.name}', '${c.phone}')">
+                                <div class="fav-avatar">${c.avatar}</div>
+                                <div class="fav-name">${c.name}</div>
+                                <div class="fav-action">Send</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            if (allContainer) {
+                allContainer.innerHTML = others.map(c => `
+                    <div class="transaction-item" onclick="quickSend('${c.name}', '${c.phone}')">
+                        <div class="transaction-left">
+                            <div class="transaction-icon" style="background: #E8F5E9;">${c.avatar}</div>
+                            <div>
+                                <h4>${c.name}</h4>
+                                <div style="font-size: 12px; color: #6B7280;">${c.phone}</div>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function quickSend(name, phone) {
+            document.getElementById('recipientPhone').value = `${name} (${phone})`;
+            document.getElementById('sendModal').classList.add('active');
+        }
+
+        function quickPayBill(business, type) {
+            document.getElementById('businessNumber').value = business;
+            document.getElementById('payModal').classList.add('active');
+        }
+
+        function viewTransactionDetail(id) {
+            const transaction = transactions.find(t => t.id === id);
+            if (transaction) {
+                showToast(`${transaction.recipient}: KES ${transaction.amount} - ${transaction.status}`);
+            }
+        }
+
+        function openLoanModal() {
+            document.getElementById('loanModal').classList.add('active');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.style.background = type === 'success' ? '#2E7D32' : '#D32F2F';
+            toast.innerText = message;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        function closeModals() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.classList.remove('active');
+            });
+        }
+
+        // Event Listeners
+        document.querySelectorAll('.close-modal').forEach(btn => {
+            btn.addEventListener('click', closeModals);
+        });
+
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const action = btn.dataset.action;
+                if (action === 'send') document.getElementById('sendModal').classList.add('active');
+                else if (action === 'pay') document.getElementById('payModal').classList.add('active');
+                else if (action === 'airtime') document.getElementById('airtimeModal').classList.add('active');
+                else if (action === 'more') navigateTo('servicesPage');
+            });
+        });
+
+        document.querySelectorAll('.favorite-item').forEach(fav => {
+            fav.addEventListener('click', (e) => {
+                const name = fav.dataset.contact;
+                const number = fav.dataset.number;
+                if (name && number) {
+                    document.getElementById('recipientPhone').value = `${name} (${number})`;
+                    document.getElementById('sendModal').classList.add('active');
+                }
+            });
+        });
+
+        document.querySelectorAll('.nav-item').forEach(nav => {
+            nav.addEventListener('click', () => {
+                const navName = nav.dataset.nav;
+                if (navName === 'home') navigateTo('homePage');
+                else if (navName === 'history') navigateTo('historyPage');
+                else if (navName === 'services') navigateTo('servicesPage');
+                else if (navName === 'profile') navigateTo('profilePage');
+            });
+        });
+
+        document.getElementById('confirmSend')?.addEventListener('click', () => {
+            const recipient = document.getElementById('recipientPhone').value;
+            const amount = parseFloat(document.getElementById('sendAmount').value);
+            const reference = document.getElementById('reference').value;
+            
+            if (!recipient || !amount || amount <= 0) {
+                showToast('Please fill all fields', 'error');
+                return;
+            }
+            
+            const fee = amount * 0.01;
+            const total = amount + fee;
+            
+            if (updateBalance(total, true)) {
+                addTransaction(recipient, amount, 'sent', reference);
+                showToast(`Sent KES ${amount.toLocaleString()} to ${recipient}. Fee: KES ${fee.toFixed(2)}`);
+                document.getElementById('sendAmount').value = '';
+                document.getElementById('reference').value = '';
+                document.getElementById('recipientPhone').value = '';
+                closeModals();
+            }
+        });
+
+        document.getElementById('confirmPay')?.addEventListener('click', () => {
+            const business = document.getElementById('businessNumber').value;
+            const account = document.getElementById('accountNumber').value;
+            const amount = parseFloat(document.getElementById('payAmount').value);
+            
+            if (!business || !account || !amount || amount <= 0) {
+                showToast('Please fill all fields', 'error');
+                return;
+            }
+            
+            if (updateBalance(amount, true)) {
+                addTransaction(business, amount, 'bills', `Account: ${account}`);
+                showToast(`Paid KES ${amount.toLocaleString()} to ${business}`);
+                document.getElementById('businessNumber').value = '';
+                document.getElementById('accountNumber').value = '';
+                document.getElementById('payAmount').value = '';
+                closeModals();
+            }
+        });
+
+        document.getElementById('confirmAirtime')?.addEventListener('click', () => {
+            const phone = document.getElementById('airtimePhone').value;
+            const amount = parseInt(document.getElementById('airtimeAmount').value);
+            
+            if (!phone || phone.length < 9) {
+                showToast('Enter a valid phone number', 'error');
+                return;
+            }
+            
+            if (updateBalance(amount, true)) {
+                addTransaction(phone, amount, 'airtime', 'Airtime purchase');
+                showToast(`KES ${amount} airtime sent to ${phone}`);
+                document.getElementById('airtimePhone').value = '';
+                closeModals();
+            }
+        });
+
+        document.getElementById('confirmLoan')?.addEventListener('click', () => {
+            const amount = parseFloat(document.getElementById('loanAmount').value);
+            const period = document.getElementById('loanPeriod').value;
+            
+            if (!amount || amount < 500 || amount > 50000) {
+                showToast('Enter amount between KES 500 and 50,000', 'error');
+                return;
+            }
+            
+            showToast(`Loan application for KES ${amount} submitted! Processing...`);
+            closeModals();
+        });
+
+        document.getElementById('searchContacts')?.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filtered = contacts.filter(c => c.name.toLowerCase().includes(searchTerm));
+            // Update contact display
+        });
+
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                renderHistory(tab.dataset.filter);
+            });
+        });
+
+        document.getElementById('homeNotifications')?.addEventListener('click', () => {
+            showToast('🔔 3 new notifications: Loan pre-approved, Cashback offer, Bill reminder');
+        });
+
+        // Initialize
+        renderHomeTransactions();
+        updateBalanceDisplay();
+
+        window.onclick = (e) => {
+            if (e.target.classList.contains('modal')) closeModals();
+        };
+    </script>
+</body>
+</html>
