@@ -137,12 +137,35 @@
             color: white;
             margin-bottom: 24px;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .balance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
         }
 
         .balance-label {
             font-size: 14px;
             opacity: 0.8;
-            margin-bottom: 8px;
+        }
+
+        .balance-eye {
+            background: rgba(255,255,255,0.2);
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .balance-eye:hover {
+            background: rgba(255,255,255,0.3);
         }
 
         .balance-amount {
@@ -523,11 +546,16 @@
                 </div>
 
                 <div class="balance-card">
-                    <div class="balance-label">Available Balance</div>
-                    <div class="balance-amount" id="homeBalance">KES 102,450.00</div>
+                    <div class="balance-header">
+                        <div class="balance-label">Available Balance</div>
+                        <div class="balance-eye" id="toggleBalanceHome">
+                            <i class="fas fa-eye-slash" id="balanceEyeIcon"></i>
+                        </div>
+                    </div>
+                    <div class="balance-amount" id="homeBalance">KES 112,450.52</div>
                     <div class="balance-trend" style="font-size: 12px; opacity: 0.8;">
                         <span style="color: #A5D6A7;"><i class="fas fa-arrow-up"></i> +5%</span>
-                        <span>from last week</span>
+                        <span>from last month</span>
                     </div>
                 </div>
 
@@ -621,7 +649,7 @@
                     <div class="service-card" onclick="openLoanModal()">
                         <div class="service-icon"><i class="fas fa-hand-holding-usd"></i></div>
                         <h4>Loans</h4>
-                        <p style="font-size: 12px; color: #6B7280;">Up to KES 550,000</p>
+                        <p style="font-size: 12px; color: #6B7280;">Up to KES 50,000</p>
                     </div>
                     <div class="service-card" onclick="showToast('Savings Pots coming soon!')">
                         <div class="service-icon"><i class="fas fa-piggy-bank"></i></div>
@@ -699,7 +727,7 @@
 
                 <div class="profile-header">
                     <div class="profile-avatar">JD</div>
-                    <h3>Alexander Kathanzu</h3>
+                    <h3>John Mwangi</h3>
                     <p style="color: #6B7280;">+254 712 345 678</p>
                     <p style="color: #2E7D32; font-size: 12px;">⭐ Tier 3 - Premium Member</p>
                 </div>
@@ -880,7 +908,6 @@
                     <option value="100">KES 100</option>
                     <option value="200">KES 200</option>
                     <option value="500">KES 500</option>
-                    <option value="200">KES 1000</option>
                 </select>
             </div>
             <button class="submit-btn" id="confirmAirtime">Buy Airtime</button>
@@ -895,7 +922,7 @@
             </div>
             <div class="loan-card" style="background: linear-gradient(135deg, #E8F5E9, #C8E6C9); margin-bottom: 20px;">
                 <h4>Your Loan Limit</h4>
-                <p style="font-size: 32px; font-weight: 800; color: #2E7D32;">KES 550,000</p>
+                <p style="font-size: 32px; font-weight: 800; color: #2E7D32;">KES 50,000</p>
                 <p>Based on your transaction history</p>
             </div>
             <div class="input-group">
@@ -918,7 +945,8 @@
 
     <script>
         // App State
-        let currentBalance = 12450.00;
+        let currentBalance = 112450.52;
+        let balanceVisible = true; // Initially visible
         let transactions = [
             { id: 1, type: 'sent', recipient: 'M-Pesa Pay', amount: 500, date: '2026-03-28T10:32:00', description: 'Payment', status: 'Completed' },
             { id: 2, type: 'bills', recipient: 'Electricity Bill', amount: 2000, date: '2026-03-27T16:15:00', description: 'KPLC', status: 'Paid' },
@@ -935,6 +963,35 @@
             { name: 'Peter O.', phone: '0756789012', avatar: 'PO', favorite: false },
             { name: 'Grace M.', phone: '0767890123', avatar: 'GM', favorite: false }
         ];
+
+        // Function to format balance with commas and 2 decimal places
+        function formatBalance(amount) {
+            return `KES ${amount.toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+
+        // Update all balance displays based on visibility
+        function updateAllBalances() {
+            const balanceElements = document.querySelectorAll('#homeBalance');
+            const displayAmount = balanceVisible ? formatBalance(currentBalance) : 'KES ••••••';
+            balanceElements.forEach(el => {
+                if (el) el.innerText = displayAmount;
+            });
+            // Also update profile balance if exists (there's no explicit profile balance, but we could add later)
+        }
+
+        // Toggle balance visibility
+        function toggleBalance() {
+            balanceVisible = !balanceVisible;
+            const eyeIcon = document.getElementById('balanceEyeIcon');
+            if (balanceVisible) {
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+            updateAllBalances();
+        }
 
         // Navigation
         function navigateTo(pageId) {
@@ -963,21 +1020,14 @@
             // Refresh data when navigating
             if (pageId === 'historyPage') renderHistory();
             if (pageId === 'contactsPage') renderContacts();
-            updateBalanceDisplay();
-        }
-
-        function updateBalanceDisplay() {
-            const balanceElements = document.querySelectorAll('#homeBalance, #profileBalance');
-            balanceElements.forEach(el => {
-                if (el) el.innerText = `KES ${currentBalance.toLocaleString('en-KE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-            });
+            updateAllBalances();
         }
 
         function updateBalance(amount, isDeduction = true) {
             if (isDeduction) {
                 if (currentBalance >= amount) {
                     currentBalance -= amount;
-                    updateBalanceDisplay();
+                    updateAllBalances();
                     return true;
                 } else {
                     showToast('Insufficient balance!', 'error');
@@ -985,7 +1035,7 @@
                 }
             } else {
                 currentBalance += amount;
-                updateBalanceDisplay();
+                updateAllBalances();
                 return true;
             }
         }
@@ -1241,7 +1291,7 @@
         document.getElementById('searchContacts')?.addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
             const filtered = contacts.filter(c => c.name.toLowerCase().includes(searchTerm));
-            // Update contact display
+            // Update contact display - simplified for demo
         });
 
         document.querySelectorAll('.filter-tab').forEach(tab => {
@@ -1256,9 +1306,15 @@
             showToast('🔔 3 new notifications: Loan pre-approved, Cashback offer, Bill reminder');
         });
 
+        // Toggle balance on click
+        document.getElementById('toggleBalanceHome')?.addEventListener('click', toggleBalance);
+
         // Initialize
         renderHomeTransactions();
-        updateBalanceDisplay();
+        updateAllBalances();
+        // Set eye icon to eye-slash initially (visible)
+        const eyeIcon = document.getElementById('balanceEyeIcon');
+        if (eyeIcon) eyeIcon.classList.add('fa-eye-slash');
 
         window.onclick = (e) => {
             if (e.target.classList.contains('modal')) closeModals();
